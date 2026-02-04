@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home.dart'; // importiamo la home/dashboard
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,14 +18,14 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFBEE3F8), // <- sfondo blu chiaro della pagina
+      backgroundColor: const Color(0xFFBEE3F8),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
             width: 380,
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
             decoration: BoxDecoration(
-              color: Colors.white, // card bianca
+              color: Colors.white,
               borderRadius: BorderRadius.circular(18),
               boxShadow: const [
                 BoxShadow(
@@ -37,15 +38,8 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // LOGO
-                Image.asset(
-                  'assets/logo.png',
-                  height: 90,
-                ),
-
+                Image.asset('assets/logo.png', height: 90),
                 const SizedBox(height: 28),
-
-                // TITOLO
                 const Text(
                   'Accedi',
                   style: TextStyle(
@@ -53,17 +47,11 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
                 const Text(
                   'Inserisci le tue credenziali',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
-
                 const SizedBox(height: 32),
 
                 // EMAIL
@@ -142,7 +130,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     onPressed: () {
-                      debugPrint('Login premuto');
+                      // Naviga alla DashboardPage e rimuove il login dalla pila
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DashboardPage()),
+                      );
                     },
                     child: const Text(
                       'Accedi',

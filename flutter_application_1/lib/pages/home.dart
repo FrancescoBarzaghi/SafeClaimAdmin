@@ -1,27 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const SafeClaimApp());
-}
-
-class SafeClaimApp extends StatelessWidget {
-  const SafeClaimApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'SafeClaim Admin',
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF3F4F6), // gray-100
-        colorSchemeSeed: Colors.blue,
-      ),
-      home: const DashboardPage(), // direttamente la dashboard
-    );
-  }
-}
-
 /* ================== DASHBOARD PAGE ================== */
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
