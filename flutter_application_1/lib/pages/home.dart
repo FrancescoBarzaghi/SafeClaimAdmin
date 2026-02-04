@@ -1,254 +1,312 @@
 import 'package:flutter/material.dart';
 
-/* ================== DASHBOARD PAGE ================== */
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
-
-  @override
-  State<DashboardPage> createState() => _DashboardPageState();
+void main() {
+  runApp(const MyApp());
 }
 
-class _DashboardPageState extends State<DashboardPage> {
-  bool showNotifications = false;
-  bool showProfile = false;
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  final List<Map<String, dynamic>> roles = [
-    {'role': 'Perito', 'total': 24},
-    {'role': 'Admin', 'total': 5},
-    {'role': 'Soccorso', 'total': 18},
-    {'role': 'Officina', 'total': 12},
-    {'role': 'Automobilista', 'total': 253},
-  ];
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFFF5F6FA),
+        fontFamily: 'Inter',
+      ),
+      home: const DashboardPage(),
+    );
+  }
+}
+
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          _buildHeader(),
-          Expanded(child: _buildContent()),
+          const _Header(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: const [
+                  SizedBox(height: 20),
+                  _ActiveUsersCard(),
+                  SizedBox(height: 20),
+                  _UserManagementCard(),
+                  SizedBox(height: 20),
+                  _RoleStatisticsCard(),
+                  SizedBox(height: 30),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  /* ================== HEADER ================== */
-  Widget _buildHeader() {
+/* ---------------- HEADER ---------------- */
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.blue,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'SafeClaim',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+      height: 90,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E66F5),
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(18),
+        ),
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            // LOGO
+            Image.asset(
+              'assets/logo.png',
+              height: 50,
+              fit: BoxFit.contain,
             ),
-          ),
-          Row(
-            children: [
-              Stack(
-                children: [
-                  IconButton(
-                    onPressed: () => setState(() => showNotifications = !showNotifications),
-                    icon: const Icon(Icons.notifications, color: Colors.white),
-                  ),
-                  Positioned(
-                    right: 6,
-                    top: 6,
-                    child: Container(
-                      width: 16,
-                      height: 16,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '3',
-                          style: TextStyle(color: Colors.white, fontSize: 10),
-                        ),
+
+            const Spacer(),
+
+            // NOTIFICHE
+            Stack(
+              children: [
+                const Icon(Icons.notifications, color: Colors.white),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Text(
+                      '3',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () => setState(() => showProfile = !showProfile),
-                child: const CircleAvatar(
-                  radius: 14,
-                  backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=12'),
+                ),
+              ],
+            ),
+
+            const SizedBox(width: 16),
+
+            // AVATAR
+            const CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.black,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/* ---------------- ACTIVE USERS ---------------- */
+
+class _ActiveUsersCard extends StatelessWidget {
+  const _ActiveUsersCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      decoration: BoxDecoration(
+        color: const Color(0xFF00C853),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: const [
+          Icon(Icons.groups, color: Colors.white, size: 28),
+          SizedBox(height: 6),
+          Text(
+            'UTENTI ATTIVI',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            '312',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            'Aggiornato ora',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/* ---------------- USER MANAGEMENT ---------------- */
+
+class _UserManagementCard extends StatelessWidget {
+  const _UserManagementCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return _WhiteCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.group_outlined, color: Color(0xFF1E66F5)),
+              SizedBox(width: 8),
+              Text(
+                'Gestione Utenti',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
+
+          const SizedBox(height: 16),
+
+          _ActionButton('Crea Nuovo Account'),
+          const SizedBox(height: 10),
+          _ActionButton('Gestisci Ruoli Utenti'),
+          const SizedBox(height: 10),
+          _ActionButton('Visualizza Elenco'),
         ],
       ),
     );
   }
+}
 
-  /* ================== CONTENT ================== */
-  Widget _buildContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        children: [
-          _buildStatsCard(),
-          const SizedBox(height: 12),
-          _buildUserManagementCard(),
-          const SizedBox(height: 12),
-          _buildRolesTableCard(),
-          const SizedBox(height: 12),
-        ],
-      ),
-    );
-  }
+class _ActionButton extends StatelessWidget {
+  final String label;
 
-  /* ================== STATS CARD ================== */
-  Widget _buildStatsCard() {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Colors.green, Colors.greenAccent],
+  const _ActionButton(this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 46,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF1E66F5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
           ),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 8,
-            ),
-          ],
         ),
-        child: Column(
-          children: const [
-            Icon(Icons.people, color: Colors.white, size: 40),
-            SizedBox(height: 8),
-            Text(
-              'UTENTI ATTIVI',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
-            ),
-            SizedBox(height: 4),
-            Text(
-              '312',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
+        onPressed: () {},
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/* ---------------- ROLE STATISTICS ---------------- */
+
+class _RoleStatisticsCard extends StatelessWidget {
+  const _RoleStatisticsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return _WhiteCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.grid_view, color: Color(0xFF1E66F5)),
+              SizedBox(width: 8),
+              Text(
+                'Statistica Ruoli',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'Aggiornato ora',
-              style: TextStyle(color: Colors.white70, fontSize: 10),
-            ),
-          ],
-        ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          _row('Perito', '24'),
+          _row('Admin', '5'),
+          _row('Soccorso', '18'),
+          _row('Officina', '12'),
+          _row('Automobilista', '253'),
+        ],
       ),
     );
   }
 
-  /* ================== USER MANAGEMENT CARD ================== */
-  Widget _buildUserManagementCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.person, color: Colors.blue),
-                SizedBox(width: 6),
-                Text(
-                  'Gestione Utenti',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _actionButton('Crea Nuovo Account'),
-            _actionButton('Gestisci Ruoli Utenti'),
-            _actionButton('Visualizza Elenco'),
-            const SizedBox(height: 12),
-            const Row(
-              children: [
-                Icon(Icons.shield, size: 16),
-                SizedBox(width: 6),
-                Text('Assegna Permessi'),
-              ],
-            ),
-            const SizedBox(height: 6),
-            const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 16),
-                SizedBox(width: 6),
-                Text('Attiva / Disattiva'),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _actionButton(String text) {
+  Widget _row(String role, String total) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () {},
-          child: Text(text),
-        ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Text(role),
+          const Spacer(),
+          Text(
+            total,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ],
       ),
     );
   }
+}
 
-  /* ================== ROLES TABLE CARD ================== */
-  Widget _buildRolesTableCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.list, color: Colors.blue),
-                SizedBox(width: 6),
-                Text(
-                  'Statistica Ruoli',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            DataTable(
-              columns: const [
-                DataColumn(label: Text('Ruolo')),
-                DataColumn(label: Text('Totale'), numeric: true),
-              ],
-              rows: roles
-                  .map(
-                    (role) => DataRow(
-                      cells: [
-                        DataCell(Text(role['role'])),
-                        DataCell(Text(role['total'].toString())),
-                      ],
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
-        ),
+/* ---------------- GENERIC WHITE CARD ---------------- */
+
+class _WhiteCard extends StatelessWidget {
+  final Widget child;
+
+  const _WhiteCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
       ),
+      child: child,
     );
   }
 }
