@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'newaccount.dart';
+import 'login.dart'; // Assicurati di avere questo file o che la classe LoginPage esista
 
 void main() {
   runApp(const MyApp());
@@ -15,6 +16,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF5F6FA),
         fontFamily: 'Inter',
+        // Questo serve per stilizzare i menu popup globalmente se necessario
+        popupMenuTheme: PopupMenuThemeData(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          color: Colors.white,
+          elevation: 4,
+        ),
       ),
       home: const DashboardPage(),
     );
@@ -75,39 +82,190 @@ class _Header extends StatelessWidget {
               'assets/logo.png',
               height: 50,
               fit: BoxFit.contain,
+              // Gestione errore se l'asset non esiste, per evitare crash durante il test
+              errorBuilder: (c, o, s) => const Icon(Icons.shield, color: Colors.white, size: 40),
             ),
             const Spacer(),
-            Stack(
-              children: [
-                const Icon(Icons.notifications, color: Colors.white),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
+            
+            // --- TENDINA NOTIFICHE ---
+            Theme(
+              data: Theme.of(context).copyWith(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+              ),
+              child: PopupMenuButton<String>(
+                offset: const Offset(0, 50), // Sposta la tendina in basso
+                tooltip: 'Notifiche',
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                icon: Stack(
+                  children: [
+                    const Icon(Icons.notifications, color: Colors.white),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Text(
+                          '3',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: const Text(
-                      '3',
+                  ],
+                ),
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  // Titolo "Notifiche"
+                  const PopupMenuItem<String>(
+                    enabled: false, // Non cliccabile
+                    child: Text(
+                      'Notifiche',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16, 
+                        fontWeight: FontWeight.bold, 
+                        color: Colors.black
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const PopupMenuDivider(),
+                  // Notifica 1
+                  _buildNotificationItem(
+                    title: 'Nuovo utente registrato',
+                    subtitle: 'Mario Rossi si è registrato come Perito',
+                    time: '2 min fa',
+                  ),
+                  // Notifica 2
+                  _buildNotificationItem(
+                    title: 'Richiesta permessi',
+                    subtitle: 'Luca Bianchi richiede accesso admin',
+                    time: '15 min fa',
+                  ),
+                  // Notifica 3
+                  _buildNotificationItem(
+                    title: 'Aggiornamento sistema',
+                    subtitle: 'Nuova versione disponibile',
+                    time: '1 ora fa',
+                  ),
+                ],
+              ),
             ),
+
             const SizedBox(width: 16),
-            const CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.black,
+
+            // --- TENDINA UTENTE (ACCOUNT) ---
+            Theme(
+              data: Theme.of(context).copyWith(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+              ),
+              child: PopupMenuButton<String>(
+                offset: const Offset(0, 50),
+                tooltip: 'Account',
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: const CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.black, // O Image.network se hai una foto
+                  child: Icon(Icons.person, size: 20, color: Colors.white), // Placeholder se manca foto
+                ),
+                onSelected: (value) {
+                  if (value == 'logout') {
+                    // Navigazione verso Login
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()),
+                    );
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  // Sezione Ruolo
+                  const PopupMenuItem<String>(
+                    enabled: false, // Non cliccabile, solo visualizzazione
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Ruolo', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        SizedBox(height: 4),
+                        Text('Admin', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  // Tasto Logout
+                  const PopupMenuItem<String>(
+                    value: 'logout',
+                    child: Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.red, 
+                        fontWeight: FontWeight.w600
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Helper per costruire gli elementi della notifica
+  PopupMenuItem<String> _buildNotificationItem({
+    required String title,
+    required String subtitle,
+    required String time,
+  }) {
+    return PopupMenuItem<String>(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      height: 0, // Permette al contenuto di definire l'altezza
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Pallino blu
+          Container(
+            margin: const EdgeInsets.only(top: 6),
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+              color: Color(0xFF1E66F5),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Testi
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  time,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+                const SizedBox(height: 8), // Spaziatore tra le notifiche
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
