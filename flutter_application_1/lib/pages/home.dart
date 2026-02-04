@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'newaccount.dart';
 
 void main() {
   runApp(const MyApp());
@@ -70,16 +71,12 @@ class _Header extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            // LOGO
             Image.asset(
               'assets/logo.png',
               height: 50,
               fit: BoxFit.contain,
             ),
-
             const Spacer(),
-
-            // NOTIFICHE
             Stack(
               children: [
                 const Icon(Icons.notifications, color: Colors.white),
@@ -104,10 +101,7 @@ class _Header extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(width: 16),
-
-            // AVATAR
             const CircleAvatar(
               radius: 18,
               backgroundColor: Colors.black,
@@ -192,10 +186,21 @@ class _UserManagementCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 16),
 
-          _ActionButton('Crea Nuovo Account'),
+          /// 🔵 BOTTONE CHE APRE newaccount.dart
+          _ActionButton(
+            'Crea Nuovo Account',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NewAccountPage(),
+                ),
+              );
+            },
+          ),
+
           const SizedBox(height: 10),
           _ActionButton('Gestisci Ruoli Utenti'),
           const SizedBox(height: 10),
@@ -208,8 +213,9 @@ class _UserManagementCard extends StatelessWidget {
 
 class _ActionButton extends StatelessWidget {
   final String label;
+  final VoidCallback? onTap;
 
-  const _ActionButton(this.label);
+  const _ActionButton(this.label, {this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +229,7 @@ class _ActionButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        onPressed: () {},
+        onPressed: onTap,
         child: Text(
           label,
           style: const TextStyle(
@@ -260,9 +266,7 @@ class _RoleStatisticsCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
           _row('Perito', '24'),
           _row('Admin', '5'),
           _row('Soccorso', '18'),
