@@ -31,35 +31,36 @@ class RoleConfig {
   const RoleConfig(this.label, this.bg, this.text, this.icon);
 }
 
+// Colori badge simili a quelli di Tailwind
 final roleConfig = {
   UserRole.perito: RoleConfig(
     "Perito",
-    Colors.blue.shade100,
-    Colors.blue.shade800,
+    Color(0xFFDBEAFE), // bg-blue-100
+    Color(0xFF1E3A8A), // text-blue-800
     Icons.help_outline,
   ),
   UserRole.automobilista: RoleConfig(
     "Automobilista",
-    Colors.green.shade100,
-    Colors.green.shade800,
+    Color(0xFFD1FAE5), // bg-green-100
+    Color(0xFF065F46), // text-green-800
     Icons.person,
   ),
   UserRole.officina: RoleConfig(
     "Officina",
-    Colors.orange.shade100,
-    Colors.orange.shade800,
+    Color(0xFFFFEDD5), // bg-orange-100
+    Color(0xFFC2410C), // text-orange-800
     Icons.build,
   ),
   UserRole.soccorso: RoleConfig(
     "Soccorso",
-    Colors.purple.shade100,
-    Colors.purple.shade800,
+    Color(0xFFEDE9FE), // bg-purple-100
+    Color(0xFF6B21A8), // text-purple-800
     Icons.car_crash,
   ),
   UserRole.admin: RoleConfig(
     "Admin",
-    Colors.red.shade100,
-    Colors.red.shade800,
+    Color(0xFFFEE2E2), // bg-red-100
+    Color(0xFF991B1B), // text-red-800
     Icons.security,
   ),
 };
@@ -132,15 +133,15 @@ class _ElencoPageState extends State<ElencoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Color(0xFFF9FAFB), // bg-gray-50
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        leading: const BackButton(),
+        backgroundColor: Color(0xFF2563EB), // bg-blue-600
+        leading: const BackButton(color: Colors.white),
         title: Row(
           children: const [
-            Icon(Icons.people),
+            Icon(Icons.people, color: Colors.white),
             SizedBox(width: 8),
-            Text("Lista Utenti"),
+            Text("Lista Utenti", style: TextStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -155,7 +156,7 @@ class _ElencoPageState extends State<ElencoPage> {
             const SizedBox(height: 12),
             Text(
               "Mostrando ${filteredUsers.length} di ${mockUsers.length} utenti",
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(color: Colors.grey[600]),
             ),
             const SizedBox(height: 12),
             ...filteredUsers.map(
@@ -177,7 +178,7 @@ class _ElencoPageState extends State<ElencoPage> {
   Widget _searchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: Color(0xFF2563EB), // bg-blue-600
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
@@ -185,7 +186,7 @@ class _ElencoPageState extends State<ElencoPage> {
         style: const TextStyle(color: Colors.white),
         decoration: const InputDecoration(
           hintText: "Cerca utente...",
-          hintStyle: TextStyle(color: Colors.white70),
+          hintStyle: TextStyle(color: Color(0xFFBFDBFE)), // placeholder azul
           prefixIcon: Icon(Icons.search, color: Colors.white),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 14),
@@ -200,6 +201,7 @@ class _ElencoPageState extends State<ElencoPage> {
 
   Widget _roleFilter() {
     return Card(
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -218,13 +220,26 @@ class _ElencoPageState extends State<ElencoPage> {
                   label: const Text("Tutti"),
                   selected: selectedRole == null,
                   onSelected: (_) => setState(() => selectedRole = null),
+                  selectedColor: Color(0xFF2563EB),
+                  backgroundColor: Colors.white,
+                  labelStyle: TextStyle(
+                      color: selectedRole == null ? Colors.white : Colors.black),
                 ),
                 ...UserRole.values.map(
-                  (r) => ChoiceChip(
-                    label: Text(roleConfig[r]!.label),
-                    selected: selectedRole == r,
-                    onSelected: (_) => setState(() => selectedRole = r),
-                  ),
+                  (r) {
+                    final cfg = roleConfig[r]!;
+                    final selected = selectedRole == r;
+                    return ChoiceChip(
+                      label: Text(cfg.label),
+                      selected: selected,
+                      onSelected: (_) => setState(() => selectedRole = r),
+                      selectedColor: cfg.bg,
+                      backgroundColor: Colors.white,
+                      labelStyle: TextStyle(
+                        color: selected ? cfg.text : Colors.black,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -252,7 +267,7 @@ class _ElencoPageState extends State<ElencoPage> {
           children: [
             CircleAvatar(
               radius: 24,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: Colors.grey[200],
               child: const Icon(Icons.person, color: Colors.grey),
             ),
             const SizedBox(width: 16),
@@ -270,12 +285,12 @@ class _ElencoPageState extends State<ElencoPage> {
                   const SizedBox(height: 4),
                   Text(
                     user.email,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     user.phone,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
                   ),
                   const SizedBox(height: 12),
                   Container(
