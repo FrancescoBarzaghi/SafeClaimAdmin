@@ -295,32 +295,47 @@ class _ElencoPageState extends State<ElencoPage> {
                       if (otherRoles.isNotEmpty)
                         PopupMenuButton<UserRole>(
                           icon: const Icon(Icons.more_vert, size: 20),
-                          itemBuilder: (context) => otherRoles
-                              .map((role) {
-                                final cfg = roleConfig[role]!;
-                                return PopupMenuItem<UserRole>(
-                                  enabled: false,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: cfg.bg,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(cfg.icon, size: 14, color: cfg.text),
-                                        const SizedBox(width: 4),
-                                        Text(cfg.label,
-                                            style: TextStyle(
-                                                fontSize: 12, color: cfg.text)),
-                                      ],
+                          itemBuilder: (context) => [
+                            PopupMenuItem<UserRole>(
+                              enabled: false,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Altri ruoli:",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey,
                                     ),
                                   ),
-                                );
-                              })
-                              .toList(),
+                                  const SizedBox(height: 6),
+                                  ...otherRoles.map((role) {
+                                    final cfg = roleConfig[role]!;
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: cfg.bg,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(cfg.icon, size: 14, color: cfg.text),
+                                          const SizedBox(width: 4),
+                                          Text(cfg.label,
+                                              style: TextStyle(
+                                                  fontSize: 12, color: cfg.text)),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                     ],
                   ),
