@@ -31,7 +31,7 @@ class RoleConfig {
   const RoleConfig(this.label, this.bg, this.text, this.icon);
 }
 
-// Colori badge simili a quelli di Tailwind
+// Colori badge simili a Tailwind
 final roleConfig = {
   UserRole.perito: RoleConfig(
     "Perito",
@@ -93,6 +93,13 @@ final mockUsers = <AppUser>[
   ),
   AppUser(
     id: "4",
+    name: "Giuseppe Verdi",
+    email: "giuseppe.verdi@email.it",
+    phone: "+39 333 4567890",
+    roles: [UserRole.soccorso],
+  ),
+  AppUser(
+    id: "5",
     name: "Admin Sistema",
     email: "admin@sistema.it",
     phone: "+39 333 5678901",
@@ -186,7 +193,7 @@ class _ElencoPageState extends State<ElencoPage> {
         style: const TextStyle(color: Colors.white),
         decoration: const InputDecoration(
           hintText: "Cerca utente...",
-          hintStyle: TextStyle(color: Color(0xFFBFDBFE)), // placeholder azul
+          hintStyle: TextStyle(color: Color(0xFFBFDBFE)),
           prefixIcon: Icon(Icons.search, color: Colors.white),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 14),
@@ -255,6 +262,7 @@ class _ElencoPageState extends State<ElencoPage> {
 
   Widget _userCard(AppUser user) {
     final mainRole = user.roles.first;
+    final otherRoles = user.roles.length > 1 ? user.roles.sublist(1) : <UserRole>[];
     final config = roleConfig[mainRole]!;
 
     return Card(
@@ -275,12 +283,46 @@ class _ElencoPageState extends State<ElencoPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    user.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          user.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 15),
+                        ),
+                      ),
+                      if (otherRoles.isNotEmpty)
+                        PopupMenuButton<UserRole>(
+                          icon: const Icon(Icons.more_vert, size: 20),
+                          itemBuilder: (context) => otherRoles
+                              .map((role) {
+                                final cfg = roleConfig[role]!;
+                                return PopupMenuItem<UserRole>(
+                                  enabled: false,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: cfg.bg,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(cfg.icon, size: 14, color: cfg.text),
+                                        const SizedBox(width: 4),
+                                        Text(cfg.label,
+                                            style: TextStyle(
+                                                fontSize: 12, color: cfg.text)),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              })
+                              .toList(),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -303,13 +345,11 @@ class _ElencoPageState extends State<ElencoPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(config.icon,
-                            size: 14, color: config.text),
+                        Icon(config.icon, size: 14, color: config.text),
                         const SizedBox(width: 4),
                         Text(
                           config.label,
-                          style: TextStyle(
-                              color: config.text, fontSize: 12),
+                          style: TextStyle(color: config.text, fontSize: 12),
                         ),
                       ],
                     ),
