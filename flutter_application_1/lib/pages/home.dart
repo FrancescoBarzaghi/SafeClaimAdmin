@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'newaccount.dart';
-import 'login.dart'; // Assicurati di avere questo file o che la classe LoginPage esista
+import 'login.dart';
+import 'elenco.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,9 +17,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF5F6FA),
         fontFamily: 'Inter',
-        // Questo serve per stilizzare i menu popup globalmente se necessario
         popupMenuTheme: PopupMenuThemeData(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           color: Colors.white,
           elevation: 4,
         ),
@@ -82,190 +84,57 @@ class _Header extends StatelessWidget {
               'assets/logo.png',
               height: 50,
               fit: BoxFit.contain,
-              // Gestione errore se l'asset non esiste, per evitare crash durante il test
-              errorBuilder: (c, o, s) => const Icon(Icons.shield, color: Colors.white, size: 40),
+              errorBuilder: (c, o, s) =>
+                  const Icon(Icons.shield, color: Colors.white, size: 40),
             ),
             const Spacer(),
-            
-            // --- TENDINA NOTIFICHE ---
-            Theme(
-              data: Theme.of(context).copyWith(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-              ),
-              child: PopupMenuButton<String>(
-                offset: const Offset(0, 50), // Sposta la tendina in basso
-                tooltip: 'Notifiche',
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                icon: Stack(
-                  children: [
-                    const Icon(Icons.notifications, color: Colors.white),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Text(
-                          '3',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  // Titolo "Notifiche"
-                  const PopupMenuItem<String>(
-                    enabled: false, // Non cliccabile
-                    child: Text(
-                      'Notifiche',
-                      style: TextStyle(
-                        fontSize: 16, 
-                        fontWeight: FontWeight.bold, 
-                        color: Colors.black
-                      ),
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  // Notifica 1
-                  _buildNotificationItem(
-                    title: 'Nuovo utente registrato',
-                    subtitle: 'Mario Rossi si è registrato come Perito',
-                    time: '2 min fa',
-                  ),
-                  // Notifica 2
-                  _buildNotificationItem(
-                    title: 'Richiesta permessi',
-                    subtitle: 'Luca Bianchi richiede accesso admin',
-                    time: '15 min fa',
-                  ),
-                  // Notifica 3
-                  _buildNotificationItem(
-                    title: 'Aggiornamento sistema',
-                    subtitle: 'Nuova versione disponibile',
-                    time: '1 ora fa',
-                  ),
-                ],
-              ),
+
+            /// NOTIFICHE
+            PopupMenuButton<String>(
+              offset: const Offset(0, 50),
+              icon: const Icon(Icons.notifications, color: Colors.white),
+              itemBuilder: (_) => const [
+                PopupMenuItem(enabled: false, child: Text('Notifiche')),
+              ],
             ),
 
             const SizedBox(width: 16),
 
-            // --- TENDINA UTENTE (ACCOUNT) ---
-            Theme(
-              data: Theme.of(context).copyWith(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
+            /// ACCOUNT
+            PopupMenuButton<String>(
+              offset: const Offset(0, 50),
+              child: const CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.black,
+                child: Icon(Icons.person, color: Colors.white, size: 20),
               ),
-              child: PopupMenuButton<String>(
-                offset: const Offset(0, 50),
-                tooltip: 'Account',
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.black, // O Image.network se hai una foto
-                  child: Icon(Icons.person, size: 20, color: Colors.white), // Placeholder se manca foto
+              onSelected: (value) {
+                if (value == 'logout') {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const LoginPage(),
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  enabled: false,
+                  child: Text('Admin'),
                 ),
-                onSelected: (value) {
-                  if (value == 'logout') {
-                    // Navigazione verso Login
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginPage()),
-                    );
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  // Sezione Ruolo
-                  const PopupMenuItem<String>(
-                    enabled: false, // Non cliccabile, solo visualizzazione
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Ruolo', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        SizedBox(height: 4),
-                        Text('Admin', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
-                      ],
-                    ),
+                PopupMenuDivider(),
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.red),
                   ),
-                  const PopupMenuDivider(),
-                  // Tasto Logout
-                  const PopupMenuItem<String>(
-                    value: 'logout',
-                    child: Text(
-                      'Logout',
-                      style: TextStyle(
-                        color: Colors.red, 
-                        fontWeight: FontWeight.w600
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // Helper per costruire gli elementi della notifica
-  PopupMenuItem<String> _buildNotificationItem({
-    required String title,
-    required String subtitle,
-    required String time,
-  }) {
-    return PopupMenuItem<String>(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: 0, // Permette al contenuto di definire l'altezza
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Pallino blu
-          Container(
-            margin: const EdgeInsets.only(top: 6),
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: Color(0xFF1E66F5),
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Testi
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  time,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-                const SizedBox(height: 8), // Spaziatore tra le notifiche
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -285,17 +154,13 @@ class _ActiveUsersCard extends StatelessWidget {
         color: const Color(0xFF00C853),
         borderRadius: BorderRadius.circular(18),
       ),
-      child: Column(
-        children: const [
+      child: const Column(
+        children: [
           Icon(Icons.groups, color: Colors.white, size: 28),
           SizedBox(height: 6),
           Text(
             'UTENTI ATTIVI',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(color: Colors.white),
           ),
           SizedBox(height: 8),
           Text(
@@ -304,14 +169,6 @@ class _ActiveUsersCard extends StatelessWidget {
               color: Colors.white,
               fontSize: 36,
               fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'Aggiornato ora',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
             ),
           ),
         ],
@@ -331,22 +188,12 @@ class _UserManagementCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.group_outlined, color: Color(0xFF1E66F5)),
-              SizedBox(width: 8),
-              Text(
-                'Gestione Utenti',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+          const Text(
+            'Gestione Utenti',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
 
-          /// 🔵 BOTTONE CHE APRE newaccount.dart
           _ActionButton(
             'Crea Nuovo Account',
             onTap: () {
@@ -360,9 +207,26 @@ class _UserManagementCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 10),
-          _ActionButton('Gestisci Ruoli Utenti'),
+
+          _ActionButton(
+            'Gestisci Ruoli Utenti',
+            onTap: () {},
+          ),
+
           const SizedBox(height: 10),
-          _ActionButton('Visualizza Elenco'),
+
+          /// 🔵 COLLEGAMENTO A elenco.dart
+          _ActionButton(
+            'Visualizza Elenco',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ElencoPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -381,19 +245,16 @@ class _ActionButton extends StatelessWidget {
       width: double.infinity,
       height: 46,
       child: ElevatedButton(
+        onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF1E66F5),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(25),
           ),
         ),
-        onPressed: onTap,
         child: Text(
           label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );
@@ -409,50 +270,40 @@ class _RoleStatisticsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _WhiteCard(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.grid_view, color: Color(0xFF1E66F5)),
-              SizedBox(width: 8),
-              Text(
-                'Statistica Ruoli',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _row('Perito', '24'),
-          _row('Admin', '5'),
-          _row('Soccorso', '18'),
-          _row('Officina', '12'),
-          _row('Automobilista', '253'),
-        ],
-      ),
-    );
-  }
-
-  Widget _row(String role, String total) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          Text(role),
-          const Spacer(),
-          Text(
-            total,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
+        children: const [
+          _StatRow('Perito', '24'),
+          _StatRow('Admin', '5'),
+          _StatRow('Soccorso', '18'),
+          _StatRow('Officina', '12'),
+          _StatRow('Automobilista', '253'),
         ],
       ),
     );
   }
 }
 
-/* ---------------- GENERIC WHITE CARD ---------------- */
+class _StatRow extends StatelessWidget {
+  final String role;
+  final String total;
+
+  const _StatRow(this.role, this.total);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Text(role),
+          const Spacer(),
+          Text(total),
+        ],
+      ),
+    );
+  }
+}
+
+/* ---------------- WHITE CARD ---------------- */
 
 class _WhiteCard extends StatelessWidget {
   final Widget child;
@@ -462,7 +313,6 @@ class _WhiteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
